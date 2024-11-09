@@ -64,11 +64,11 @@ pipeline {
             }
         }
 
-        stage('Archive') {
-            steps {
-                archiveArtifacts artifacts: 'target/*.jar', fingerprint: true
-            }
-        }
+        // stage('Archive') {
+        //     steps {
+        //         archiveArtifacts artifacts: 'target/*.jar', fingerprint: true
+        //     }
+        // }
 
         stage('Build Docker Image') {
             steps {
