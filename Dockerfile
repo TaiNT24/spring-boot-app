@@ -1,8 +1,27 @@
-FROM eclipse-temurin:17-jdk-alpine
+# Use the official Maven image as the base image
+FROM maven:3.8.4-openjdk-17 AS build
 
-ARG JAR_NAME
-
+# Set the working directory
 WORKDIR /app
-COPY target/${JAR_NAME} app.jar
-EXPOSE 3001
-ENTRYPOINT ["java","-jar","app.jar", "--server.port=3001"]
+
+# Copy the pom.xml and any other necessary configuration files
+COPY ./pom.xml /app
+COPY ./src /app/src
+
+# Build the application
+RUN mvn clean package -Dmaven.test.skip=true
+
+# Create a new image for running the application
+FROM openjdk:17-jdk
+
+# Set the working directory
+WORKDIR /app
+
+# Copy the built JAR file from the previous stage
+COPY --from=build /app/target/*.jar app.jar
+
+# Expose the port on which the Spring Boot application will run
+EXPOSE 8080
+
+# Command to run the application
+CMD ["java", "-jar", "app.jar"]
